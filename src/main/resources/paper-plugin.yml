@@ -1,0 +1,5 @@
+name: SillyEnchants
+version: '1.0-SNAPSHOT'
+main: io.github.lamelemon.treefellerEnchantment.TreefellerEnchantment
+bootstrapper: io.github.lamelemon.treefellerEnchantment.EnchantBootstrap
+api-version: '1.21.10'
