@@ -33,6 +33,8 @@ class TreefellerEnchantment : JavaPlugin() {
 
         pluginManager.registerEvents(TreeBreakEvent(), this)
 
-        registerCommand("limitlessEnchant", config.getStringList("command-aliases"), LimitlessEnchant())
+        if (configuration.getBoolean("limitless-enchant.enabled")) {
+            registerCommand("limitlessEnchant", config.getStringList("limitless-enchant.command-aliases"), LimitlessEnchant())
+        }
     }
 }

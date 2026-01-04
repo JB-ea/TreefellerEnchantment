@@ -1,20 +1,23 @@
 enabled: true
 
 has-to-sneak: true # Whether player has to be sneaking to activate tree feller (false = sneaking disables)
-max-tree-radius: 15 # NOT FUNCTIONAL Horizontal distance a block may be from the first block broken
-max-tree-height: 50 # NOT FUNCTIONAL Vertical distance that a block may be from the first block broken
+max-tree-radius: 15 # Horizontal distance a block may be from the first block broken
+max-tree-height: 50 # Vertical distance that a block may be from the first block broken
 item-safety: false # Enabling means items will not break off of enchantment usage (and in turn enchantment will stop)
 
 # Be very careful with this as too high a number may lead to a crash
-block-cap-multiplier: 100 # Number to multiply the enchantment level by to get the maximum amount of blocks breakable by the enchantment
+block-cap: 500 # Number to multiply the enchantment level by to get the maximum amount of blocks breakable by the enchantment
 
-command-aliases:
-  - limitlessEnchant
-  - limitlessEnchantment
-  - lm
-  - brokenEnchant
-  - brokenEnchantment
-  - be
+# Command that lets you add enchantments at any level [1, 255]
+limitless-enchantment:
+  enabled: true
+  command-aliases:
+    - limitlessEnchant
+    - limitlessEnchantment
+    - lm
+    - brokenEnchant
+    - brokenEnchantment
+    - be
 
 # DO NOT CHANGE ANYTHING PAST THIS POINT UNLESS YOU ARE ABSOLUTELY SURE YOU KNOW WHAT YOU ARE DOING
 # CHANGING THESE MAY LEAD TO UNDESIRED BEHAVIOUR SUCH AS THE ENCHANTMENT BEING DELETED OFF OF ITEMS
@@ -52,25 +55,3 @@ materials:
   MUSHROOM_STEM:
     - BROWN_MUSHROOM_BLOCK
     - RED_MUSHROOM_BLOCK
-
-enchantment:
-  # For any changes made to these to take effect you have to fully restart your server
-  description: "Treefeller" # Text to show up as the enchantment name
-  weight: 4 # [1, 1024]
-  max-level: 5 # [1, 255]
-  minimum-cost:
-    base-cost: 5
-    additional-cost: 8
-  maximum-cost:
-    base-cost: 25
-    additional-cost: 8
-  anvil-cost: 4 # [0, 2147483647]
-  active-slots:
-    - MAINHAND
-  supported-items:
-    - netherite_axe
-    - diamond_axe
-    - iron_axe
-    - stone_axe
-    - golden_axe
-    - wooden_axe

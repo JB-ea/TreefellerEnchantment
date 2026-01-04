@@ -10,6 +10,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.util.Vector
+import org.joml.Vector2d
+import kotlin.math.absoluteValue
 
 class TreeBreakEvent: Listener {
 
@@ -17,7 +20,9 @@ class TreeBreakEvent: Listener {
     var currentPlayer: Player? = null
     val allowedTrees: HashMap<String, HashSet<Material>> = HashMap()
     var hasToSneak = true
-    var blockCapMultiplier = 100
+    var blockCap = 500
+    var maxTreeRadius = 15
+    var maxTreeHeight = 50
 
     init {
         val configurationSection = configuration.getConfigurationSection("materials")
@@ -29,7 +34,9 @@ class TreeBreakEvent: Listener {
         }
 
         hasToSneak = configuration.getBoolean("has-to-sneak", true)
-        blockCapMultiplier = configuration.getInt("block-cap-multiplier", 100)
+        blockCap = configuration.getInt("block-cap", 500)
+        maxTreeRadius = configuration.getInt("max-tree-radius", 15)
+        maxTreeHeight = configuration.getInt("max-tree-height", 50)
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -37,31 +44,36 @@ class TreeBreakEvent: Listener {
         if (event.isCancelled) return
 
         val player = event.player
-        if (player.isSneaking != hasToSneak || player == currentPlayer || !event.isDropItems) return
+        if (player.isSneaking != hasToSneak || player == currentPlayer) return
 
         val currentTool = player.inventory.itemInMainHand
-
         if (!currentTool.containsEnchantment(enchantment)) return
 
         val block = event.block
         val allowedBlocks = allowedTrees[block.type.toString()]
         if (allowedBlocks is HashSet<Material>) {
-            currentPlayer = player
-            blocksLeft = currentTool.getEnchantmentLevel(enchantment) * blockCapMultiplier
-            treeBreaker(block,
+            currentPlayer = player // Cache player
+            blocksLeft = blockCap
+            treeFeller(block,
                 block.type,
                 block.type,
+                block.location.toVector(),
                 allowedBlocks
             )
             currentPlayer = null
         }
     }
 
-    fun treeBreaker(block: Block, lastBlock: Material, firstBlock: Material, allowedBlocks: HashSet<Material>): Boolean {
+    fun treeFeller(block: Block, lastBlockType: Material, firstMaterial: Material, firstCords: Vector, allowedBlocks: HashSet<Material>): Boolean {
         if (blocksLeft <= 0) return false
-        if (block.type !in allowedBlocks && block.type != firstBlock) return true
         if (block.isEmpty) return true
-        if (block.type == firstBlock && lastBlock != firstBlock) return true
+
+        if (block.type == firstMaterial && lastBlockType != firstMaterial) return true // Block is a log but last block isn't
+        if (block.type !in allowedBlocks && block.type != firstMaterial) return true // Block isn't allowed
+
+        if ((block.y - firstCords.y).absoluteValue > maxTreeHeight) return true
+        if (Vector2d(block.x - firstCords.x, block.z - firstCords.z).length() > maxTreeRadius) return true
+
 
         blocksLeft--
         currentPlayer?.breakBlock(block)
@@ -69,7 +81,7 @@ class TreeBreakEvent: Listener {
         for (y in -1..1) {
             for (z in -1..1) {
                 for (x in -1..1) {
-                    if (!treeBreaker(block.getRelative(x, y, z), lastBlock, firstBlock, allowedBlocks)) return false
+                    if (!treeFeller(block.getRelative(x, y, z), lastBlockType, firstMaterial, firstCords, allowedBlocks)) return false
                 }
             }
         }
