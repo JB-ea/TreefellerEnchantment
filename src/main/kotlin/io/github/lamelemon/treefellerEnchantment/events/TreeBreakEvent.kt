@@ -11,7 +11,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 
-class TreeBreakEvent(): Listener {
+class TreeBreakEvent: Listener {
 
     var blocksLeft: Int = 0
     var currentPlayer: Player? = null
